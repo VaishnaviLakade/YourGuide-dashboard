@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import "../styles/style.css";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+
   const [student, setStudent] = useState({
     name: "John Doe",
     email: "john.doe@example.com",
@@ -15,18 +17,21 @@ const Dashboard = () => {
 
   const [mentors, setMentors] = useState([
     {
+      id: 1,
       name: "Dr. Amelia Carter",
       position: "Senior AI Researcher",
       description: "Expert in ML and AI with 10+ years of experience.",
       profilePic: "https://randomuser.me/api/portraits/women/45.jpg",
     },
     {
+      id: 2,
       name: "James Smith",
       position: "Software Engineer at Google",
       description: "Full-stack developer specializing in React and Node.js.",
       profilePic: "https://randomuser.me/api/portraits/men/32.jpg",
     },
     {
+      id: 3,
       name: "Sophia Johnson",
       position: "CTO at TechStart",
       description: "Passionate about startups and innovation.",
@@ -42,10 +47,6 @@ const Dashboard = () => {
     skills: "",
   });
 
-  useEffect(() => {
-    // Fetch data from backend (if needed)
-  }, []);
-
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -53,6 +54,10 @@ const Dashboard = () => {
   const handleSubmit = () => {
     setStudent((prevStudent) => ({ ...prevStudent, ...formData }));
     setShowModal(false);
+  };
+
+  const handleMentorClick = (id) => {
+    navigate(`/mentor/${id}`);
   };
 
   return (
@@ -68,9 +73,7 @@ const Dashboard = () => {
         <p className="text-lg text-gray-500 mb-2">{student.email}</p>
         <p className="text-sm text-gray-700">{student.about}</p>
         <p className="text-sm text-gray-700">Education: {student.education}</p>
-        <p className="text-sm text-gray-700">
-          Experience: {student.experience}
-        </p>
+        <p className="text-sm text-gray-700">Experience: {student.experience}</p>
         <p className="text-sm text-gray-700">Skills: {student.skills}</p>
         <button
           className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
@@ -84,10 +87,11 @@ const Dashboard = () => {
       <div className="md:w-3/4 p-6">
         <h2 className="text-3xl font-semibold mb-6 text-gray-700">Mentors</h2>
         <div className="flex flex-col space-y-6">
-          {mentors.map((mentor, index) => (
+          {mentors.map((mentor) => (
             <div
-              key={index}
-              className="flex items-center bg-white p-6 rounded-2xl shadow-md transition hover:shadow-xl w-full"
+              key={mentor.id}
+              className="flex items-center bg-white p-6 rounded-2xl shadow-md transition hover:shadow-xl w-full cursor-pointer"
+              onClick={() => handleMentorClick(mentor.id)}
             >
               <img
                 src={mentor.profilePic}
@@ -95,13 +99,9 @@ const Dashboard = () => {
                 className="w-24 h-24 rounded-full shadow-md border-2 border-gray-300"
               />
               <div className="ml-6">
-                <h3 className="text-xl font-semibold text-gray-800">
-                  {mentor.name}
-                </h3>
+                <h3 className="text-xl font-semibold text-gray-800">{mentor.name}</h3>
                 <p className="text-lg text-gray-500">{mentor.position}</p>
-                <p className="text-base text-gray-600 mt-2">
-                  {mentor.description}
-                </p>
+                <p className="text-base text-gray-600 mt-2">{mentor.description}</p>
               </div>
             </div>
           ))}

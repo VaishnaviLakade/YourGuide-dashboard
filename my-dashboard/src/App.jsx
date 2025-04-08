@@ -1,9 +1,15 @@
 import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Dashboard from "./assets/dashboard.jsx";
-export default function () {
+import MentorProfile from "./assets/MentorProfile.jsx";
+
+export default function App() {
   return (
-    <div>
-      <Dashboard />
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/mentor/:id" element={<MentorProfile />} />
+        </Routes>
+    </Router>
   );
 }
