@@ -40,6 +40,7 @@ const Dashboard = () => {
   ]);
 
   const [showModal, setShowModal] = useState(false);
+  const [formPage, setFormPage] = useState(1);
   const [formData, setFormData] = useState({
     about: "",
     education: "",
@@ -52,8 +53,9 @@ const Dashboard = () => {
   };
 
   const handleSubmit = () => {
-    setStudent((prevStudent) => ({ ...prevStudent, ...formData }));
+    setStudent((prev) => ({ ...prev, ...formData }));
     setShowModal(false);
+    setFormPage(1);
   };
 
   const handleMentorClick = (id) => {
@@ -62,7 +64,7 @@ const Dashboard = () => {
 
   return (
     <div className="flex flex-col md:flex-row h-screen p-6 bg-gradient-to-r from-blue-50 to-blue-100">
-      {/* Left Side - Student Profile */}
+      {/* Student Profile */}
       <div className="md:w-1/4 bg-white p-6 rounded-2xl shadow-lg flex flex-col items-center">
         <img
           src={student.profilePic}
@@ -83,14 +85,14 @@ const Dashboard = () => {
         </button>
       </div>
 
-      {/* Right Side - Mentor Profiles */}
-      <div className="md:w-3/4 p-6">
+      {/* Mentors Section */}
+      <div className="md:w-3/4 p-6 overflow-auto">
         <h2 className="text-3xl font-semibold mb-6 text-gray-700">Mentors</h2>
         <div className="flex flex-col space-y-6">
           {mentors.map((mentor) => (
             <div
               key={mentor.id}
-              className="flex items-center bg-white p-6 rounded-2xl shadow-md transition hover:shadow-xl w-full cursor-pointer"
+              className="flex items-center bg-white p-6 rounded-2xl shadow-md hover:shadow-xl transition cursor-pointer"
               onClick={() => handleMentorClick(mentor.id)}
             >
               <img
@@ -99,59 +101,157 @@ const Dashboard = () => {
                 className="w-24 h-24 rounded-full shadow-md border-2 border-gray-300"
               />
               <div className="ml-6">
-                <h3 className="text-xl font-semibold text-gray-800">{mentor.name}</h3>
+                <h3 className="text-xl font-semibold text-gray-800">
+                  {mentor.name}
+                </h3>
                 <p className="text-lg text-gray-500">{mentor.position}</p>
-                <p className="text-base text-gray-600 mt-2">{mentor.description}</p>
+                <p className="text-base text-gray-600 mt-2">
+                  {mentor.description}
+                </p>
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Update Profile Modal */}
+      {/* Modal with Blur Background */}
       {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center">
-          <div className="absolute inset-0 bg-gray-900 bg-opacity-30 backdrop-blur-md"></div>
-          <div className="bg-white p-6 rounded-lg w-1/3 shadow-xl z-10">
-            <h2 className="text-xl font-semibold mb-4">Update Profile</h2>
-            <input
-              name="about"
-              placeholder="About"
-              className="w-full p-2 border mb-2"
-              onChange={handleInputChange}
-            />
-            <input
-              name="education"
-              placeholder="Education"
-              className="w-full p-2 border mb-2"
-              onChange={handleInputChange}
-            />
-            <input
-              name="experience"
-              placeholder="Experience"
-              className="w-full p-2 border mb-2"
-              onChange={handleInputChange}
-            />
-            <input
-              name="skills"
-              placeholder="Skills"
-              className="w-full p-2 border mb-4"
-              onChange={handleInputChange}
-            />
-            <div className="flex justify-end">
-              <button
-                className="mr-2 px-4 py-2 bg-gray-400 text-white rounded-lg"
-                onClick={() => setShowModal(false)}
-              >
-                Cancel
-              </button>
-              <button
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg"
-                onClick={handleSubmit}
-              >
-                Save
-              </button>
-            </div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Background Blur Overlay */}
+          <div className="absolute inset-0 bg-black bg-opacity-30 backdrop-blur-md"></div>
+
+          {/* Modal Box */}
+          <div className="relative bg-white rounded-2xl shadow-2xl w-[90%] md:w-[35rem] p-6 z-50">
+            <button
+              className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 text-xl font-bold"
+              onClick={() => {
+                setShowModal(false);
+                setFormPage(1);
+              }}
+            >
+              &times;
+            </button>
+
+            <h2 className="text-2xl font-semibold mb-4 text-gray-800">
+              Update Profile
+            </h2>
+
+            {formPage === 1 && (
+              <>
+                <div className="mb-4">
+                  <label className="block text-gray-600 mb-1">
+                    Profile Image
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    required
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        const imageUrl = URL.createObjectURL(file);
+                        setStudent((prev) => ({
+                          ...prev,
+                          profilePic: imageUrl,
+                        }));
+                      }
+                    }}
+                    className="w-full border px-3 py-2 rounded"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-gray-600 mb-1">About</label>
+                  <textarea
+                    name="about"
+                    rows="3"
+                    placeholder="Tell something about yourself"
+                    className="w-full border px-3 py-2 rounded"
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <label className="block text-gray-600 mb-1">Education</label>
+                  <input
+                    name="education"
+                    placeholder="e.g., B.E. in Computer Engineering"
+                    className="w-full border px-3 py-2 rounded"
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+
+                <div className="flex justify-end">
+                  <button
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+                    onClick={() => setFormPage(2)}
+                  >
+                    Next
+                  </button>
+                </div>
+              </>
+            )}
+
+            {formPage === 2 && (
+              <>
+                <div className="mb-6">
+                  <label className="block text-gray-600 mb-1">Experience</label>
+                  <input
+                    name="experience"
+                    placeholder="e.g., 2 years as a web developer"
+                    className="w-full border px-3 py-2 rounded"
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <label className="block text-gray-600 mb-1">Skills</label>
+                  <textarea
+                    name="skills"
+                    rows="2"
+                    placeholder="e.g., JavaScript, React, Node.js"
+                    className="w-full border px-3 py-2 rounded"
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+
+                <div className="mb-6">
+                  <label className="block text-gray-600 mb-1">
+                    Upload Resume / Certificate (PDF)
+                  </label>
+                  <input
+                    type="file"
+                    accept="application/pdf"
+                    className="w-full border px-3 py-2 rounded"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        console.log("PDF uploaded:", file.name);
+                      }
+                    }}
+                    required
+                  />
+                </div>
+
+                <div className="flex justify-between">
+                  <button
+                    className="px-4 py-2 bg-gray-400 text-white rounded-lg"
+                    onClick={() => setFormPage(1)}
+                  >
+                    Back
+                  </button>
+                  <button
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+                    onClick={handleSubmit}
+                  >
+                    Save
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
